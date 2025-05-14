@@ -65,8 +65,12 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/apps/"
-    ]
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+    }
   },
   "engines": {
     "node": ">=18.0.0 <19.0.0"
