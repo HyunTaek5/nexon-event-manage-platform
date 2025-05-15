@@ -13,7 +13,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - mongo_primary_data:/data/db
-      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+      - ./mongo/mongo-keyfile:/data/keyfile/mongo-keyfile:ro
     ports:
       - '27017:27017'
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
@@ -27,7 +27,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
-      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+      - ./mongo/mongo-keyfile:/data/keyfile/mongo-keyfile:ro
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
 
   mongodb-arbiter:
@@ -39,5 +39,5 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
-      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+      - ./mongo/mongo-keyfile:/data/keyfile/mongo-keyfile:ro
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
