@@ -1,16 +1,43 @@
 version: '3'
 
 volumes:
-  db_vol:
+  mongo_primary_data:
+    driver: local
 
 services:
-  mongodb:
-    image: mongodb/mongodb-community-server:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - db_vol:/data/db
+  mongodb-primary:
+    image: mongo:latest
+    container_name: mongodb-primary
     environment:
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=dev-db
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo_primary_data:/data/db
+      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+    ports:
+      - '27017:27017'
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
+
+  mongodb-secondary:
+    image: mongo:latest
+    container_name: mongodb-secondary
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
+
+  mongodb-arbiter:
+    image: mongo:latest
+    container_name: mongodb-arbiter
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
