@@ -1,5 +1,3 @@
-version: '3'
-
 volumes:
   mongo_primary_data:
     driver: local
@@ -9,11 +7,13 @@ services:
     image: mongo:latest
     container_name: mongodb-primary
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=devdb
     volumes:
       - mongo_primary_data:/data/db
       - ./mongo/mongo-keyfile:/data/keyfile/mongo-keyfile:ro
+      - ./mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
     ports:
       - '27017:27017'
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile=/data/keyfile/mongo-keyfile" ]
