@@ -12,7 +12,7 @@ import { BaseSchema } from './base.schema';
 export abstract class BaseRepository<TDocument extends BaseSchema> {
   protected abstract readonly logger: Logger;
 
-  constructor(
+  protected constructor(
     protected readonly model: Model<TDocument>,
     private readonly connection: Connection,
   ) {}
