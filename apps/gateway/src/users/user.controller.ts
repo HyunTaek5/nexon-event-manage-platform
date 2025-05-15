@@ -9,7 +9,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JoinDto } from '../../../auth/src/users/dto/request/join.dto';
 import { catchError, firstValueFrom } from 'rxjs';
 
-@Controller({ path: 'users' })
+@Controller({ path: 'users', version: '1' })
 export class UserController {
   constructor(
     @Inject('USER_SERVICE')
