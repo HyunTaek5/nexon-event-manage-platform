@@ -44,6 +44,12 @@ export abstract class BaseRepository<TDocument extends BaseSchema> {
     return document as TDocument;
   }
 
+  async findOneOrNull(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
+    const document = await this.model.findOne(filterQuery, {}, { lean: true });
+
+    return document as TDocument;
+  }
+
   async findOneAndUpdate(
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
