@@ -1,5 +1,4 @@
-import { UserRole } from '../../enum/role.enum';
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 export class JoinDto {
   @IsEmail()
@@ -16,7 +15,4 @@ export class JoinDto {
 
   @IsString()
   nickname: string;
-
-  @IsEnum(UserRole)
-  role: UserRole;
 }
