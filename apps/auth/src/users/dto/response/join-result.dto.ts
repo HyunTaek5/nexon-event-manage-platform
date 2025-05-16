@@ -5,7 +5,6 @@ export class JoinResultDto {
   nickname: string;
   role: string;
   createdAt: Date;
-  updatedAt?: Date;
 
   constructor(partial: Partial<JoinResultDto>) {
     this.email = partial.email;
@@ -14,6 +13,5 @@ export class JoinResultDto {
     this.nickname = partial.nickname;
     this.role = partial.role;
     this.createdAt = partial.createdAt;
-    this.updatedAt = partial.updatedAt;
   }
 }
