@@ -70,14 +70,13 @@ export class AuthService {
   }
 
   async generateAccessToken(userId: Types.ObjectId): Promise<string> {
-    const payload = { sub: userId, role: UserRole.USER };
+    const payload = { sub: userId };
     return this.jwtService.sign(payload);
   }
 
   async generateRefreshToken(userId: Types.ObjectId): Promise<string> {
     const payload = {
       sub: userId,
-      role: UserRole.USER,
     };
 
     return this.jwtService.sign(payload, {
