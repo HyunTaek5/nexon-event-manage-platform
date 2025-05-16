@@ -40,6 +40,12 @@ export class UserService {
     return user;
   }
 
+  async updateUserRole(id: string, role: UserRole): Promise<User> {
+    const user = await this.findOneById(id);
+    await this.userRepository.updateOne(user._id, { role: role });
+    return this.findOneById(id);
+  }
+
   async join(dto: JoinDto): Promise<User> {
     await this.checkDuplicateEmail(dto.email);
     await this.checkDuplicateNickname(dto.nickname);
