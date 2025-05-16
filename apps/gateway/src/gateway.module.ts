@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { GatewayService } from './gateway.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserController } from './controllers/users/user.controller';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './controllers/auth/auth.controller';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -17,14 +16,31 @@ import { IRoleStrategyName } from './guards/role-strategy.interface';
       isGlobal: true,
       envFilePath: './apps/gateway/.env',
     }),
-    ClientsModule.register([
-      { name: 'USER_SERVICE', transport: Transport.TCP },
-      { name: 'AUTH_SERVICE', transport: Transport.TCP },
+    ClientsModule.registerAsync([
+      {
+        name: 'USER_SERVICE',
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            port: parseInt(configService.get<string>('AUTH_SERVICE_PORT'), 10),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'AUTH_SERVICE',
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            port: parseInt(configService.get<string>('AUTH_SERVICE_PORT'), 10),
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [AuthController, UserController],
   providers: [
-    GatewayService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     {

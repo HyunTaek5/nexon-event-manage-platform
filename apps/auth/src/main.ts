@@ -7,6 +7,9 @@ async function bootstrap() {
     AuthServiceModule,
     {
       transport: Transport.TCP,
+      options: {
+        port: parseInt(process.env.AUTH_SERVICE_PORT, 10),
+      },
     },
   );
   await app.listen();
