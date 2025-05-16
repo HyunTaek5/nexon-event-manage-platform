@@ -10,6 +10,7 @@ import { JoinDto } from '../../../../auth/src/users/dto/request/join.dto';
 import { catchError, firstValueFrom } from 'rxjs';
 import { JoinResultDto } from '../../../../auth/src/users/dto/response/join-result.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { Public } from '../../decorators/public.decorator';
 
 @Controller({ path: 'users', version: '1' })
 export class UserController {
@@ -22,6 +23,7 @@ export class UserController {
     summary: '사용자 회원가입',
     description: '회원가입 API',
   })
+  @Public()
   @Post('join')
   async join(@Body() dto: JoinDto): Promise<JoinResultDto> {
     try {

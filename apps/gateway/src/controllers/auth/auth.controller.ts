@@ -11,6 +11,7 @@ import { LoginDto } from '../../../../auth/src/auth/dto/request/login.dto';
 import { LoginResultDto } from '../../../../auth/src/auth/dto/response/login-result.dto';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ApiOperation } from '@nestjs/swagger';
+import { Public } from '../../decorators/public.decorator';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
@@ -23,6 +24,7 @@ export class AuthController {
     summary: '로그인',
     description: '로그인 API',
   })
+  @Public()
   @Post('login')
   async login(@Body() dto: LoginDto): Promise<LoginResultDto> {
     try {
