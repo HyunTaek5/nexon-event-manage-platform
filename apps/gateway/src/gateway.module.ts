@@ -7,6 +7,9 @@ import { AuthController } from './controllers/auth/auth.controller';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles.guard';
+import { RoleStrategy } from './guards/role.strategy';
+import { IRoleStrategyName } from './guards/role-strategy.interface';
 
 @Module({
   imports: [
@@ -24,6 +27,11 @@ import { APP_GUARD } from '@nestjs/core';
     GatewayService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    {
+      provide: IRoleStrategyName,
+      useClass: RoleStrategy,
+    },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class GatewayModule {}
