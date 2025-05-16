@@ -6,6 +6,7 @@ import {
   SaveOptions,
   Types,
   UpdateQuery,
+  UpdateWriteOpResult,
 } from 'mongoose';
 import { BaseSchema } from './base.schema';
 
@@ -48,6 +49,17 @@ export abstract class BaseRepository<TDocument extends BaseSchema> {
     const document = await this.model.findOne(filterQuery, {}, { lean: true });
 
     return document as TDocument;
+  }
+
+  async updateOne(
+    id: Types.ObjectId,
+    update: UpdateQuery<TDocument>,
+  ): Promise<UpdateWriteOpResult> {
+    const updateResult = await this.model.updateOne({ _id: id }, update, {
+      lean: true,
+    });
+
+    return updateResult;
   }
 
   async findOneAndUpdate(
