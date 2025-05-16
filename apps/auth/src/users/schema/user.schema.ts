@@ -17,7 +17,7 @@ export class User extends BaseSchema {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   nickname: string;
 
   @Prop({ enum: UserRole, type: SchemaTypes.String })
