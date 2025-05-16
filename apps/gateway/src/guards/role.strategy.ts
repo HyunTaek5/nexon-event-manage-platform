@@ -17,10 +17,6 @@ export class RoleStrategy {
 
     const isAuthorized = requiredRoles.some((role) => user.role === role);
 
-    if (isAuthorized) {
-      return true;
-    }
-
-    return false;
+    return isAuthorized;
   }
 }

@@ -2,8 +2,8 @@ export class LoginResultDto {
   accessToken: string;
   refreshToken: string;
 
-  constructor(accessToken: string, refreshToken: string) {
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
+  constructor(partial: Partial<LoginResultDto>) {
+    this.accessToken = partial.accessToken;
+    this.refreshToken = partial.refreshToken;
   }
 }

@@ -1,10 +1,5 @@
 import ms, { StringValue } from 'ms';
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { UserRole } from '../users/enum/role.enum';
+import { Injectable } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { User } from '../users/schema/user.schema';
 import { LoginDto } from './dto/request/login.dto';
@@ -85,15 +80,14 @@ export class AuthService {
     });
   }
 
-  async authUserWithIdAndRole(id: number, role: UserRole): Promise<User> {
+  async authUserWithId(id: string): Promise<User> {
     const user = await this.userService.findOneById(id);
 
     if (!user) {
-      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
-    }
-
-    if (user.role !== role) {
-      throw new ForbiddenException('권한이 없습니다.');
+      throw new RpcException({
+        status: 401,
+        message: '인증에 실패했습니다.',
+      });
     }
 
     return user;

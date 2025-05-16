@@ -25,9 +25,9 @@ export class UserService {
     return user;
   }
 
-  async findOneById(id: number): Promise<User> {
+  async findOneById(id: string): Promise<User> {
     const user = await this.userRepository.findOneOrNull({
-      id: id,
+      _id: id,
     });
 
     if (!user) {
