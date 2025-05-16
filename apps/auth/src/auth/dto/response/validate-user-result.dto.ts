@@ -1,4 +1,4 @@
-import { UserRole } from '../../../users/enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 import { Types } from 'mongoose';
 
 export class ValidateUserResultDto {

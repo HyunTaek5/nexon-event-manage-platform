@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { BaseSchema } from '@app/common';
-import { UserRole } from '../enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 import { SchemaTypes } from 'mongoose';
 
 @Schema({ versionKey: false })

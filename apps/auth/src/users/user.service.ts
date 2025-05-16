@@ -4,7 +4,7 @@ import { UserRepository } from './user.repository';
 import { JoinDto } from './dto/request/join.dto';
 import { User } from './schema/user.schema';
 import { RpcException } from '@nestjs/microservices';
-import { UserRole } from './enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 
 @Injectable()
 export class UserService {

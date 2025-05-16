@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { UserRole } from '../../../../../../auth/src/users/enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 import { EnumType } from '../../../../decorators/enum-type.decorator';
 
 export class PatchUserRoleDto {

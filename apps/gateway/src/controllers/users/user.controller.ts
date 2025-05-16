@@ -14,7 +14,7 @@ import { JoinResultDto } from '../../../../auth/src/users/dto/response/join-resu
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../decorators/public.decorator';
 import { Roles } from '../../guards/roles.decorator';
-import { UserRole } from '../../../../auth/src/users/enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 import { PatchUserRoleDto } from './dto/request/patch-user-role.dto';
 import { PatchUserRoleResultDto } from './dto/response/patch-user-role-result.dto';
 

@@ -1,4 +1,4 @@
-import { UserRole } from '../../../../../../auth/src/users/enum/role.enum';
+import { UserRole } from '@app/common/enum/role.enum';
 
 export class PatchUserRoleResultDto {
   id: string;
