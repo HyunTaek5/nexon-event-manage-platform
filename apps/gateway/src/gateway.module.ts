@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { GatewayService } from './gateway.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UserController } from './users/user.controller';
+import { UserController } from './controllers/users/user.controller';
 import { ConfigModule } from '@nestjs/config';
+import { AuthController } from './controllers/auth/auth.controller';
 
 @Module({
   imports: [
@@ -12,9 +13,10 @@ import { ConfigModule } from '@nestjs/config';
     }),
     ClientsModule.register([
       { name: 'USER_SERVICE', transport: Transport.TCP },
+      { name: 'AUTH_SERVICE', transport: Transport.TCP },
     ]),
   ],
-  controllers: [UserController],
+  controllers: [AuthController, UserController],
   providers: [GatewayService],
 })
 export class GatewayModule {}

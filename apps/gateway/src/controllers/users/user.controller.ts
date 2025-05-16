@@ -6,9 +6,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { JoinDto } from '../../../auth/src/users/dto/request/join.dto';
+import { JoinDto } from '../../../../auth/src/users/dto/request/join.dto';
 import { catchError, firstValueFrom } from 'rxjs';
-import { JoinResultDto } from '../../../auth/src/users/dto/response/join-result.dto';
+import { JoinResultDto } from '../../../../auth/src/users/dto/response/join-result.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller({ path: 'users', version: '1' })

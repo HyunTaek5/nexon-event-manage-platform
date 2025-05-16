@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { DatabaseModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './users/user.module';
+import { JwtStrategy } from './jwt.strategy';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     UserModule,
     DatabaseModule,
     ConfigModule.forRoot({
@@ -14,7 +15,6 @@ import { UserModule } from './users/user.module';
       envFilePath: './apps/auth/.env',
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
+  providers: [JwtStrategy],
 })
-export class AuthModule {}
+export class AuthServiceModule {}
