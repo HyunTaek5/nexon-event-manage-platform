@@ -7,11 +7,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LoginDto } from '../../../../auth/src/auth/dto/request/login.dto';
-import { LoginResultDto } from '../../../../auth/src/auth/dto/response/login-result.dto';
+
 import { catchError, firstValueFrom } from 'rxjs';
 import { ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../decorators/public.decorator';
+import { LoginDto } from './dto/request/login.dto';
+import { LoginResultDto } from './dto/response/login-result.dto';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
