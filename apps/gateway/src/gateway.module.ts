@@ -11,6 +11,7 @@ import { RoleStrategy } from './guards/role.strategy';
 import { IRoleStrategyName } from './guards/role-strategy.interface';
 import { EventController } from './controllers/events/event.controller';
 import { RewardController } from './controllers/rewards/reward.controller';
+import { RewardRequestController } from './controllers/reward-request/reward-request.controller';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { RewardController } from './controllers/rewards/reward.controller';
     AuthController,
     EventController,
     RewardController,
+    RewardRequestController,
     UserController,
   ],
   providers: [

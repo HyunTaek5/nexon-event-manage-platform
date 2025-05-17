@@ -24,9 +24,9 @@ export class RewardRequest extends BaseSchema {
   @Prop({
     type: [
       {
-        type: String,
-        amount: Number,
-        metadata: Object,
+        type: { type: String, required: true },
+        amount: { type: Number, required: true },
+        metadata: { type: Object, default: {} },
       },
     ],
   })

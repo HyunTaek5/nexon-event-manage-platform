@@ -12,6 +12,9 @@ export class Reward extends BaseSchema {
 
   @Prop({ required: true })
   amount: number;
+
+  @Prop({ type: Object })
+  metadata?: Record<string, any>;
 }
 
 export const RewardSchema = SchemaFactory.createForClass(Reward);
