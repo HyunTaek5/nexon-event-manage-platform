@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EventRepository } from './event.repository';
 import { CreateEventDto } from './dto/request/create-event.dto';
 import { RewardService } from '../reward/reward.service';
+import { RpcException } from '@nestjs/microservices';
+import { Event } from './schema/event.schema';
 
 @Injectable()
 export class EventService {
@@ -9,6 +11,19 @@ export class EventService {
     private readonly repository: EventRepository,
     private readonly rewardService: RewardService,
   ) {}
+
+  async findOneByIdWithRewards(id: string): Promise<Event> {
+    const event = await this.repository.findOneWithRewards(id);
+
+    if (!event) {
+      throw new RpcException({
+        status: 404,
+        message: '이벤트를 찾을 수 없습니다.',
+      });
+    }
+
+    return event;
+  }
 
   async createEvent(dto: CreateEventDto) {
     const session = await this.repository.startTransaction();
