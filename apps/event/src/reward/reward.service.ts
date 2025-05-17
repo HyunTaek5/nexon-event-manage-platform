@@ -22,6 +22,20 @@ export class RewardService {
     return this.repository.bulkInsert(rewardDocs, options);
   }
 
+  async createReward(
+    eventId: Types.ObjectId,
+    dto: CreateRewardDto,
+    options?: SaveOptions,
+  ) {
+    const rewardDoc = {
+      ...dto,
+      eventId: eventId,
+      _id: new Types.ObjectId(),
+    };
+
+    return this.repository.create(rewardDoc, options);
+  }
+
   async getRewardById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new RpcException({
