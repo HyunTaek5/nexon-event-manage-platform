@@ -23,7 +23,6 @@ export class Event extends BaseSchema {
       {
         type: { type: String, required: true },
         value: { type: Number, required: true },
-        metadata: { type: Object },
       },
     ],
     default: [],
@@ -32,7 +31,6 @@ export class Event extends BaseSchema {
   conditions: {
     type: string;
     value: number;
-    metadata?: Record<string, any>;
   }[];
 }
 

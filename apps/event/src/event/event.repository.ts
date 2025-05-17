@@ -1,17 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
+
 import { BaseRepository } from '@app/common';
-import { UserToken } from './schema/user-token.schema';
+import { Event } from './schema/event.schema';
 
 @Injectable()
-export class UserTokenRepository extends BaseRepository<UserToken> {
-  protected readonly logger = new Logger(UserTokenRepository.name);
+export class EventRepository extends BaseRepository<Event> {
+  protected readonly logger = new Logger(EventRepository.name);
 
   constructor(
-    @InjectModel(UserToken.name) userTokenModel: Model<UserToken>,
+    @InjectModel(Event.name) eventModel: Model<Event>,
     @InjectConnection() connection: Connection,
   ) {
-    super(userTokenModel, connection);
+    super(eventModel, connection);
   }
 }

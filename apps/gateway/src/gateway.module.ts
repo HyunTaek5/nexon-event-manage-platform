@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { RoleStrategy } from './guards/role.strategy';
 import { IRoleStrategyName } from './guards/role-strategy.interface';
+import { EventController } from './controllers/events/event.controller';
 
 @Module({
   imports: [
@@ -37,9 +38,19 @@ import { IRoleStrategyName } from './guards/role-strategy.interface';
         }),
         inject: [ConfigService],
       },
+      {
+        name: 'EVENT_SERVICE',
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            port: parseInt(configService.get<string>('EVENT_SERVICE_PORT'), 10),
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
   ],
-  controllers: [AuthController, UserController],
+  controllers: [AuthController, EventController, UserController],
   providers: [
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
