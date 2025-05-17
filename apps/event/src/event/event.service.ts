@@ -4,6 +4,7 @@ import { CreateEventDto } from './dto/request/create-event.dto';
 import { RewardService } from '../reward/reward.service';
 import { RpcException } from '@nestjs/microservices';
 import { Event } from './schema/event.schema';
+import { Paginated } from '@app/common/pagination/paginated';
 
 @Injectable()
 export class EventService {
@@ -23,6 +24,13 @@ export class EventService {
     }
 
     return event;
+  }
+
+  async findAllWithPagination(
+    offset: number,
+    limit: number,
+  ): Promise<Paginated<Event>> {
+    return this.repository.findAllWithPagination(offset, limit);
   }
 
   async createEvent(dto: CreateEventDto) {

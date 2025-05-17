@@ -4,6 +4,7 @@ import { Connection, Model, Types } from 'mongoose';
 
 import { BaseRepository } from '@app/common';
 import { Event } from './schema/event.schema';
+import { Paginated } from '@app/common/pagination/paginated';
 
 @Injectable()
 export class EventRepository extends BaseRepository<Event> {
@@ -30,5 +31,19 @@ export class EventRepository extends BaseRepository<Event> {
       { $limit: 1 },
     ]);
     return results[0] || undefined;
+  }
+
+  async findAllWithPagination(offset: number, limit: number) {
+    const [items, totalItemCount] = await Promise.all([
+      this.model
+        .find()
+        .skip(offset)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean(),
+      this.model.countDocuments(),
+    ]);
+
+    return new Paginated<Event>(items, offset, limit, totalItemCount);
   }
 }
