@@ -10,6 +10,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { RoleStrategy } from './guards/role.strategy';
 import { IRoleStrategyName } from './guards/role-strategy.interface';
 import { EventController } from './controllers/events/event.controller';
+import { RewardController } from './controllers/rewards/reward.controller';
 
 @Module({
   imports: [
@@ -18,16 +19,6 @@ import { EventController } from './controllers/events/event.controller';
       envFilePath: './apps/gateway/.env',
     }),
     ClientsModule.registerAsync([
-      {
-        name: 'USER_SERVICE',
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            port: parseInt(configService.get<string>('AUTH_SERVICE_PORT'), 10),
-          },
-        }),
-        inject: [ConfigService],
-      },
       {
         name: 'AUTH_SERVICE',
         useFactory: (configService: ConfigService) => ({
@@ -50,7 +41,12 @@ import { EventController } from './controllers/events/event.controller';
       },
     ]),
   ],
-  controllers: [AuthController, EventController, UserController],
+  controllers: [
+    AuthController,
+    EventController,
+    RewardController,
+    UserController,
+  ],
   providers: [
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },

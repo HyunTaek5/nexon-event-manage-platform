@@ -21,7 +21,7 @@ import { PatchUserRoleResultDto } from './dto/response/patch-user-role-result.dt
 @Controller({ path: 'users', version: '1' })
 export class UserController {
   constructor(
-    @Inject('USER_SERVICE')
+    @Inject('AUTH_SERVICE')
     private readonly client: ClientProxy,
   ) {}
 
