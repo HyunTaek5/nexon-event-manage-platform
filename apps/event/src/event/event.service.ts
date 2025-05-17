@@ -13,7 +13,7 @@ export class EventService {
     private readonly rewardService: RewardService,
   ) {}
 
-  async findOneByIdWithRewards(id: string): Promise<Event> {
+  async findOneByIdWithRewards(id: string) {
     const event = await this.repository.findOneWithRewards(id);
 
     if (!event) {

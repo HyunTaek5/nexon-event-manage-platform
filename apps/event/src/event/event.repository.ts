@@ -5,6 +5,7 @@ import { Connection, Model, Types } from 'mongoose';
 import { BaseRepository } from '@app/common';
 import { Event } from './schema/event.schema';
 import { Paginated } from '@app/common/pagination/paginated';
+import { Reward } from '../reward/schema/reward.schema';
 
 @Injectable()
 export class EventRepository extends BaseRepository<Event> {
@@ -17,7 +18,7 @@ export class EventRepository extends BaseRepository<Event> {
     super(eventModel, connection);
   }
 
-  async findOneWithRewards(id: string) {
+  async findOneWithRewards(id: string): Promise<Event & { rewards: Reward[] }> {
     const results = await this.model.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
       {
