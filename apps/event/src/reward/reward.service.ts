@@ -37,13 +37,6 @@ export class RewardService {
   }
 
   async getRewardById(id: string) {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new RpcException({
-        statusCode: 400,
-        message: '유효하지 않은 id 형식입니다.',
-      });
-    }
-
     const reward = await this.repository.findOneWithEvent(id);
 
     if (!reward) {

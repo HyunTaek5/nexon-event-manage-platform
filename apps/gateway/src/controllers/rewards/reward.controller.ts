@@ -7,6 +7,8 @@ import { CreateRewardDto } from './dto/request/create-reward.dto';
 import { Roles } from '../../guards/roles.decorator';
 import { UserRole } from '@app/common/enum/role.enum';
 import { CreateRewardResultDto } from './dto/response/create-reward-result.dto';
+import { ObjectIdValidationPipe } from '@app/common/pipe/objectId-validation.pipe';
+import { Public } from '../../decorators/public.decorator';
 
 @Controller({ version: '1' })
 export class RewardController {
@@ -19,9 +21,11 @@ export class RewardController {
     summary: '보상 상세 조회',
     description: ' 보상 상세 조회 API',
   })
-  @ApiBearerAuth()
+  @Public()
   @Get('rewards/:id')
-  async getRewardById(@Param('id') id: string): Promise<RewardDetailResultDto> {
+  async getRewardById(
+    @Param('id', ObjectIdValidationPipe) id: string,
+  ): Promise<RewardDetailResultDto> {
     try {
       return await firstValueFrom(
         this.client.send('get_reward_by_id', id).pipe(
@@ -43,7 +47,7 @@ export class RewardController {
   @ApiBearerAuth()
   @Post('/events/:eventId/rewards')
   async createReward(
-    @Param('eventId') eventId: string,
+    @Param('eventId', ObjectIdValidationPipe) eventId: string,
     @Body() dto: CreateRewardDto,
   ): Promise<CreateRewardResultDto> {
     try {

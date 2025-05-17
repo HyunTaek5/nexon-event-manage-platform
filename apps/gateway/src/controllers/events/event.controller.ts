@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -20,6 +21,7 @@ import { GetEventDetailResultDto } from './dto/response/get-event-detail-result.
 import { PaginationRequestDto } from '@app/common/pagination/pagination-request.dto';
 import { BasePaginatedDto, Paginated } from '@app/common/pagination/paginated';
 import { GetEventResultDto } from './dto/response/get-event-result.dto';
+import { ObjectIdValidationPipe } from '@app/common/pipe/objectId-validation.pipe';
 
 @Controller({ path: 'events', version: '1' })
 export class EventController {
@@ -92,12 +94,16 @@ export class EventController {
   @Public()
   @Get('/:id')
   async getEventById(
-    @Param('id') id: string,
+    @Param('id', ObjectIdValidationPipe) id: string,
   ): Promise<GetEventDetailResultDto> {
     try {
       return await firstValueFrom(
         this.client.send('get_event_by_id', id).pipe(
-          catchError(() => {
+          catchError((err) => {
+            if (err.status === 404) {
+              throw new NotFoundException('해당 이벤트를 찾을 수 없습니다.');
+            }
+
             throw new InternalServerErrorException(
               '이벤트 조회에 실패했습니다.',
             );
