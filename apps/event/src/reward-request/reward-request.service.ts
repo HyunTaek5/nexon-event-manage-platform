@@ -51,6 +51,36 @@ export class RewardRequestService {
     return paginatedItems;
   }
 
+  async updateRewardRequestStatus(
+    id: string,
+    status: RequestStatus,
+    failedReason?: string,
+  ) {
+    const rewardRequestId = new Types.ObjectId(id);
+
+    const rewardRequest = await this.repository.findOneOrNull({
+      _id: rewardRequestId,
+    });
+
+    if (!rewardRequest) {
+      throw new RpcException({
+        status: 404,
+        message: '해당 보상 요청 내역을 찾을 수 없습니다.',
+      });
+    }
+
+    await this.repository.updateOne(rewardRequestId, {
+      status,
+      failedReason,
+    });
+
+    const updatedRewardRequest = await this.repository.findOneOrNull({
+      _id: rewardRequestId,
+    });
+
+    return updatedRewardRequest;
+  }
+
   async createRewardRequest(
     eventId: string,
     userId: string,

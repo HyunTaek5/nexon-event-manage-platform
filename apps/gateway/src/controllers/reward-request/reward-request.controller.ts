@@ -1,4 +1,5 @@
 import {
+  Body,
   ConflictException,
   Controller,
   Get,
@@ -7,6 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -20,6 +22,8 @@ import { CreateRewardRequestResultDto } from './dto/response/create-reward-reque
 import { GetRequestRewardsHistoryDto } from './dto/request/get-request-rewards-history.dto';
 import { BasePaginatedDto, Paginated } from '@app/common/pagination/paginated';
 import { GetRequestRewardsHistoryResultDto } from './dto/response/get-request-rewards-history-result.dto';
+import { UpdateRequestRewardsHistoryDto } from './dto/request/update-request-rewards-history.dto';
+import { UpdateRequestRewardHistoryResultDto } from './dto/response/update-request-reward-history-result.dto';
 
 @Controller({ version: '1' })
 export class RewardRequestController {
@@ -56,6 +60,38 @@ export class RewardRequestController {
             catchError(() => {
               throw new InternalServerErrorException(
                 '이벤트 보상 요청에 실패했습니다.',
+              );
+            }),
+          ),
+      );
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @ApiOperation({
+    summary: '이벤트 보상 요청 상태 변경',
+    description: '운영자 검토용 이벤트 보상 요청 상태 변경 API',
+  })
+  @Roles(UserRole.ADMIN, UserRole.OPERATOR)
+  @ApiBearerAuth()
+  @Put('/request-rewards/:id')
+  async updateRequestRewardStatus(
+    @Param('id', ObjectIdValidationPipe) id: string,
+    @Body() dto: UpdateRequestRewardsHistoryDto,
+  ): Promise<UpdateRequestRewardHistoryResultDto> {
+    try {
+      return await firstValueFrom(
+        this.client
+          .send('update_reward_request_history_status', { id, ...dto })
+          .pipe(
+            catchError((err) => {
+              if (err.status === 404) {
+                throw new NotFoundException(err.message);
+              }
+
+              throw new InternalServerErrorException(
+                '이벤트 보상 요청 상태 변경에 실패했습니다.',
               );
             }),
           ),
