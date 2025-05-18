@@ -42,6 +42,7 @@ export class RewardController {
   @ApiOperation({
     summary: '이벤트 보상 등록',
     description: '이벤트 보상 등록 API',
+    tags: ['Event'],
   })
   @Roles(UserRole.ADMIN, UserRole.OPERATOR)
   @ApiBearerAuth()
