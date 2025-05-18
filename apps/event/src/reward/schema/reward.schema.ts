@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { BaseSchema } from '@app/common';
 import { Types } from 'mongoose';
+import { RewardMetadata } from '@app/common/metadata/reward-metadata.type';
 
 @Schema({ versionKey: false })
 export class Reward extends BaseSchema {
@@ -14,7 +15,7 @@ export class Reward extends BaseSchema {
   amount: number;
 
   @Prop({ type: Object })
-  metadata?: Record<string, any>;
+  metadata?: RewardMetadata;
 }
 
 export const RewardSchema = SchemaFactory.createForClass(Reward);
