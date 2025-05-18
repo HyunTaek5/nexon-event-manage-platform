@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserController } from './controllers/users/user.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -12,6 +12,7 @@ import { IRoleStrategyName } from './guards/role-strategy.interface';
 import { EventController } from './controllers/events/event.controller';
 import { RewardController } from './controllers/rewards/reward.controller';
 import { RewardRequestController } from './controllers/reward-request/reward-request.controller';
+import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
 
 @Module({
   imports: [
@@ -50,6 +51,8 @@ import { RewardRequestController } from './controllers/reward-request/reward-req
     UserController,
   ],
   providers: [
+    Logger,
+    HttpLoggerMiddleware,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     {
@@ -59,4 +62,8 @@ import { RewardRequestController } from './controllers/reward-request/reward-req
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
-export class GatewayModule {}
+export class GatewayModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggerMiddleware).forRoutes('*');
+  }
+}
