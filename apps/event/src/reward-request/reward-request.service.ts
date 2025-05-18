@@ -73,13 +73,14 @@ export class RewardRequestService {
 
     const event = await this.eventService.findOneByIdWithRewards(eventId);
 
-    // TODO: 보상을 요청한 유저의 이벤트 조건 충족 여부 체크 로직 구현 필요
-    const conditionsMet = true;
+    const conditionsMet = await this.evaluateConditions(
+      userId,
+      event.conditions,
+    );
 
-    const status = conditionsMet ? RequestStatus.SUCCESS : RequestStatus.FAILED;
-    const failedReason = conditionsMet
-      ? undefined
-      : '이벤트 조건을 충족하지 못했습니다.';
+    const status = conditionsMet
+      ? RequestStatus.SUCCESS
+      : RequestStatus.PENDING;
 
     const rewardSnapshot = event.rewards.map((reward) => ({
       type: reward.type,
@@ -91,11 +92,52 @@ export class RewardRequestService {
       userId: userObjectId,
       eventId: eventObjectId,
       status,
-      failedReason,
       rewardSnapshot,
       requestedAt: new Date(),
     });
 
     return newRequest;
+  }
+
+  private async evaluateConditions(
+    userId: string,
+    conditions: {
+      type: string;
+      value: number;
+    }[],
+  ): Promise<boolean> {
+    for (const condition of conditions) {
+      const passed = await this.evaluateSingleCondition(userId, condition);
+
+      if (!passed) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private async evaluateSingleCondition(
+    userId: string,
+    condition: {
+      type: string;
+      value: number;
+    },
+  ): Promise<boolean> {
+    switch (condition.type) {
+      case 'login_days':
+        // mock random user login data
+        const loginDays = Math.floor(Math.random() * 7);
+        console.log('login_days', loginDays);
+        return loginDays >= condition.value;
+
+      case 'invite_friends':
+        // mock random user invite data
+        const invites = Math.floor(Math.random() * 5);
+        return invites >= condition.value;
+
+      default:
+        return false;
+    }
   }
 }
