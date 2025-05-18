@@ -3,6 +3,9 @@ import { RewardRequestService } from './reward-request.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateRewardRequestDto } from './dto/request/create-reward-request.dto';
 import { CreateRewardRequestResultDto } from './dto/response/create-reward-request-result.dto';
+import { GetRequestRewardsHistoryDto } from './dto/request/get-request-rewards-history.dto';
+import { Paginated } from '@app/common/pagination/paginated';
+import { GetRequestRewardsHistoryResultDto } from './dto/response/get-request-rewards-history-result.dto';
 
 @Controller()
 export class RewardRequestController {
@@ -19,5 +22,33 @@ export class RewardRequestController {
     );
 
     return new CreateRewardRequestResultDto(rewardRequest);
+  }
+
+  @MessagePattern('get_reward_request_history')
+  async getRequestRewardsHistory(
+    data: GetRequestRewardsHistoryDto,
+  ): Promise<Paginated<GetRequestRewardsHistoryResultDto>> {
+    const { offset, limit, userId, role, status, eventId, requestDate } = data;
+    const filterOptions = {
+      status,
+      eventId,
+      requestDate,
+    };
+
+    const { items, meta } =
+      await this.rewardRequestService.findAllWithPagination(
+        offset,
+        limit,
+        userId,
+        role,
+        filterOptions,
+      );
+
+    return new Paginated<GetRequestRewardsHistoryResultDto>(
+      items.map((item) => new GetRequestRewardsHistoryResultDto(item)),
+      offset,
+      limit,
+      meta.totalItemCount,
+    );
   }
 }

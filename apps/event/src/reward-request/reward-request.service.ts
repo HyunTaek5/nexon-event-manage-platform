@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import { RequestStatus } from '@app/common/enum/request-status.enum';
 import { EventService } from '../event/event.service';
 import { RpcException } from '@nestjs/microservices';
+import { UserRole } from '@app/common/enum/role.enum';
+import { getEndOfDay, getStartOfDay } from '@app/common/utils/get-time-date';
 
 @Injectable()
 export class RewardRequestService {
@@ -12,6 +14,42 @@ export class RewardRequestService {
     private readonly repository: RewardRequestRepository,
     private readonly eventService: EventService,
   ) {}
+
+  async findAllWithPagination(
+    offset: number,
+    limit: number,
+    userId: string,
+    role: UserRole,
+    filterOptions?: {
+      status?: RequestStatus;
+      eventId?: string;
+      requestDate?: Date;
+    },
+  ) {
+    const userFilterOption =
+      role === UserRole.USER ? { userId: new Types.ObjectId(userId) } : {};
+
+    const requestDateFilterOption = filterOptions?.requestDate
+      ? {
+          requestedAt: {
+            $gte: getStartOfDay(filterOptions.requestDate),
+            $lte: getEndOfDay(filterOptions.requestDate),
+          },
+        }
+      : {};
+
+    const paginatedItems = await this.repository.findAllWithPagination(
+      offset,
+      limit,
+      {
+        ...filterOptions,
+        ...userFilterOption,
+        ...requestDateFilterOption,
+      },
+    );
+
+    return paginatedItems;
+  }
 
   async createRewardRequest(
     eventId: string,
