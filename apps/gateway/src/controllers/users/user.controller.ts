@@ -2,6 +2,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
   Inject,
   Param,
   Patch,
@@ -17,6 +18,8 @@ import { Roles } from '../../guards/roles.decorator';
 import { UserRole } from '@app/common/enum/role.enum';
 import { PatchUserRoleDto } from './dto/request/patch-user-role.dto';
 import { PatchUserRoleResultDto } from './dto/response/patch-user-role-result.dto';
+import { CurrentUser, User } from '../../decorators/current-user.decorator';
+import { GetRequestUserDto } from './dto/response/get-request-user.dto';
 
 @Controller({ path: 'users', version: '1' })
 export class UserController {
@@ -24,6 +27,16 @@ export class UserController {
     @Inject('AUTH_SERVICE')
     private readonly client: ClientProxy,
   ) {}
+
+  @ApiOperation({
+    summary: '사용자 정보 조회',
+    description: '사용자 정보 조회 API',
+  })
+  @ApiBearerAuth()
+  @Get('/me')
+  async getRequestUser(@CurrentUser() user: User): Promise<GetRequestUserDto> {
+    return new GetRequestUserDto(user);
+  }
 
   @ApiOperation({
     summary: '사용자 회원가입',
