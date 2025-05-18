@@ -1,9 +1,10 @@
 import { RequestStatus } from '@app/common/enum/request-status.enum';
+import { RewardMetadata } from '@app/common/metadata/reward-metadata.type';
 
 class RewardSnapshot {
   type: string;
   amount: number;
-  metadata?: Record<string, any>;
+  metadata?: RewardMetadata;
 }
 
 export class CreateRewardRequestResultDto {

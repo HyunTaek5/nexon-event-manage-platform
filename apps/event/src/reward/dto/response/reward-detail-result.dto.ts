@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { RewardMetadata } from '@app/common/metadata/reward-metadata.type';
 
 class Event {
   id: Types.ObjectId;
@@ -20,6 +21,7 @@ export class RewardDetailResultDto {
   type: string;
   amount: number;
   createdAt: Date;
+  metadata?: RewardMetadata;
   event: Event;
 
   constructor(reward: {
@@ -28,6 +30,7 @@ export class RewardDetailResultDto {
     type: string;
     amount: number;
     createdAt: Date;
+    metadata?: RewardMetadata;
     event: {
       _id: Types.ObjectId;
       title: string;
@@ -47,6 +50,7 @@ export class RewardDetailResultDto {
     this.type = reward.type;
     this.amount = reward.amount;
     this.createdAt = reward.createdAt;
+    this.metadata = reward?.metadata;
     this.event = {
       id: reward.event._id,
       conditions: reward.event.conditions.map((condition) => ({

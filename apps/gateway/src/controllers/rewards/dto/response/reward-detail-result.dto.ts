@@ -1,3 +1,6 @@
+import { RewardMetadata } from '@app/common/metadata/reward-metadata.type';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
 class Condition {
   type: string;
   value: number;
@@ -19,6 +22,14 @@ export class RewardDetailResultDto {
   eventId: string;
   type: string;
   amount: number;
+  @ApiPropertyOptional({
+    type: Object,
+    example: {
+      itemCode: 'ITEM123',
+      expireDate: '2025-05-19',
+    },
+  })
+  metadata?: RewardMetadata;
   createdAt: Date;
   event: Event;
 }
