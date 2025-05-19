@@ -51,8 +51,6 @@ services:
       - EVENT_SERVICE_PORT=8002
       - MONGODB_URI=mongodb://user1:password@mongodb-primary:27017/devdb?directConnection=true
       - NODE_OPTIONS=--dns-result-order=ipv4first
-    env_file:
-      - ./apps/event/.env
     ports:
       - '8002:8002'
 
