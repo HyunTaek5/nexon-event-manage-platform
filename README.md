@@ -252,7 +252,9 @@ erDiagram
 
 Jest 및 Supertest를 사용하여 각 서비스의 통합 테스트를 수행하였습니다.
 
-![testResult](https://github-production-user-asset-6210df.s3.amazonaws.com/38789284/445278048-cd29e41a-917c-4761-9018-9aede4b4c34b.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250519T185411Z&X-Amz-Expires=300&X-Amz-Signature=8b2333ad36b3211eade634f57f5bd25c1187ddd45cf934a2e3394f20a5056de1&X-Amz-SignedHeaders=host)
+![jestTestResult](https://github.com/user-attachments/assets/51b6bd8c-0ec1-4501-89ef-c68cf0666149)
+
+
 
 ## 📝 API 명세
 
