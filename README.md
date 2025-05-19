@@ -178,6 +178,8 @@ $ docker exec -it mongodb-primary mongosh -u root -p password --eval "
 
 ## 🏛️ 데이터 모델링 Diagram
 
+다음은 각 서비스의 데이터 모델링을 나타낸 ERD입니다.
+
 ```mermaid
 erDiagram
     USER {
@@ -235,3 +237,18 @@ erDiagram
     EVENT ||--o{ REWARD: gives
     EVENT ||--o{ REWARD_REQUEST: accepts
 ```
+
+## 🧪 Test 결과
+
+Jest 및 Supertest를 사용하여 각 서비스의 통합 테스트를 수행하였습니다.
+![testResult](https://github-production-user-asset-6210df.s3.amazonaws.com/38789284/445278048-cd29e41a-917c-4761-9018-9aede4b4c34b.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250519T185411Z&X-Amz-Expires=300&X-Amz-Signature=8b2333ad36b3211eade634f57f5bd25c1187ddd45cf934a2e3394f20a5056de1&X-Amz-SignedHeaders=host)
+
+## 📝 API 명세
+
+EndPoint는 인증을 담당하는 `/auth`, 이벤트의 조회 및 생성, 보상 및 보상 요청 히스토리를 생성하는 `/events`,
+보상 요청 내역의 조회 및 상태를 수정하는 `/reward-requests`, 보상 상세 조회하는 `/rewards`,
+유저 정보를 조회, 생성, 수정하는 `/users`로 총 5개입니다.
+
+API 명세는 Swagger를 통해 문서화를 진행하였습니다.
+
+http://localhost:8000/api 로 접속하여 확인할 수 있습니다.
