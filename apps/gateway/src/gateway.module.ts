@@ -1,7 +1,7 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UserController } from './controllers/users/user.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserController } from './controllers/users/user.controller';
 import { AuthController } from './controllers/auth/auth.controller';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -22,23 +22,35 @@ import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
     }),
     ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: 'AUTH_SERVICE',
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            port: parseInt(configService.get<string>('AUTH_SERVICE_PORT'), 10),
-          },
-        }),
+        useFactory: async (configService: ConfigService) => {
+          const host = configService.get<string>('AUTH_SERVICE_HOST');
+          const port = parseInt(
+            configService.get<string>('AUTH_SERVICE_PORT'),
+            10,
+          );
+          return {
+            transport: Transport.TCP,
+            options: { host, port },
+          };
+        },
         inject: [ConfigService],
       },
       {
+        imports: [ConfigModule],
         name: 'EVENT_SERVICE',
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            port: parseInt(configService.get<string>('EVENT_SERVICE_PORT'), 10),
-          },
-        }),
+        useFactory: async (configService: ConfigService) => {
+          const host = configService.get<string>('EVENT_SERVICE_HOST');
+          const port = parseInt(
+            configService.get<string>('EVENT_SERVICE_PORT'),
+            10,
+          );
+          return {
+            transport: Transport.TCP,
+            options: { host, port },
+          };
+        },
         inject: [ConfigService],
       },
     ]),

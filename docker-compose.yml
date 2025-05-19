@@ -3,6 +3,47 @@ volumes:
     driver: local
 
 services:
+  gateway:
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: ./apps/gateway/Dockerfile
+    depends_on:
+      - auth
+      - event
+    env_file:
+      - ./apps/gateway/.env
+    ports:
+      - '8000:8000'
+
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    depends_on:
+      - mongodb-primary
+    environment:
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+    env_file:
+      - ./apps/auth/.env
+    ports:
+      - '8001:8001'
+
+  event:
+    container_name: event
+    build:
+      context: .
+      dockerfile: ./apps/event/Dockerfile
+    depends_on:
+      - mongodb-primary
+    environment:
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+    env_file:
+      - ./apps/event/.env
+    ports:
+      - '8002:8002'
+
   mongodb-primary:
     image: mongo:latest
     container_name: mongodb-primary
