@@ -41,7 +41,14 @@ export class RewardController {
 
   @ApiOperation({
     summary: '이벤트 보상 등록',
-    description: '이벤트 보상 등록 API',
+    description:
+      '이벤트 보상 등록 API\n\n 타입별 metadata 형식은 다음과 같습니다.\n\n' +
+      'type: "item" -> \n' +
+      'metadata: { itemCode: string, expireDate?: string }\n\n' +
+      'type: "point" -> \n' +
+      'metadata: { note?: string }\n\n' +
+      'type: "coupon" -> \n' +
+      'metadata: { couponId: string, validDays?: number }\n\n',
     tags: ['Event'],
   })
   @Roles(UserRole.ADMIN, UserRole.OPERATOR)

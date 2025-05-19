@@ -64,7 +64,14 @@ export class EventController {
 
   @ApiOperation({
     summary: '이벤트 생성',
-    description: '이벤트 생성 API',
+    description:
+      '이벤트 생성 API\n\n 이벤트 보상 등록시 타입별 metadata 형식은 다음과 같습니다.\n\n' +
+      'type: "item" -> \n' +
+      'metadata: { itemCode: string, expireDate?: string }\n\n' +
+      'type: "point" -> \n' +
+      'metadata: { note?: string }\n\n' +
+      'type: "coupon" -> \n' +
+      'metadata: { couponId: string, validDays?: number }\n\n',
   })
   @ApiBearerAuth()
   @Roles(UserRole.ADMIN, UserRole.OPERATOR)
