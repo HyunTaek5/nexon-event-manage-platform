@@ -4,6 +4,12 @@ import { EnumType } from '../../../../decorators/enum-type.decorator';
 
 export class JoinResultDto {
   @ApiProperty({
+    description: '사용자 ID',
+    example: '60d5f484f1c2b8a0b8c8e4e1',
+  })
+  id: string;
+
+  @ApiProperty({
     description: '이메일',
     example: 'user2@example.com',
   })
