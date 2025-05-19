@@ -79,4 +79,99 @@ $ docker exec -it mongodb-primary mongosh -u root -p password --eval "
 "
 ```
 
-이후, `Gateway` 컨테이너가 실행중인 8000번 포트의 [`/api` 엔드포인트](http://localhost:8000/api)를 통해 Swagger API 문서에 접근할 수 있습니다.
+`Gateway` 컨테이너가 실행중인 8000번 포트의 [`/api` 엔드포인트](http://localhost:8000/api)를 통해 Swagger API 문서에 접근할 수 있습니다.
+
+## 🕋 아키텍쳐 및 프로젝트 구조
+
+```mermaid
+  flowchart LR
+    User["Client (Admin/Operator/Auditor/User)"]
+    Gateway["Gateway API"]
+    Auth["Auth Service"]
+    Event["Event Service"]
+    DB[(DEV DB)]
+    User -- HTTP Request --> Gateway
+    Gateway -- TCP Request --> Event
+    Gateway -- TCP Request --> Auth
+    Auth -- Auth, User Data --> DB
+    Event -- Event, Reward, RewardRequest Data --> DB
+```
+
+- 아키텍쳐의 구성요소는 다음과 같습니다.
+    - `Gateway API`: 모든 요청을 라우팅하고 인증 및 권한 검사를 수행합니다.
+    - `Auth Service`: 유저 인증 및 역할 관리, JWT 토큰 발급 및 검증을 담당합니다.
+    - `Event Service`: 이벤트 및 보상 관리, 유저 보상 요청 처리 및 내역 관리를 담당합니다.
+    - `DB`: MongoDB ReplicaSet으로 구성된 데이터베이스입니다.
+
+
+- 프로젝트 구조는 다음과 같이 모노레포로 구현하였습니다.
+  ```text
+  .
+  ├── README.md
+  ├── apps
+  │   ├── auth
+  │   ├── event
+  │   └── gateway
+  ├── docker-compose.yml
+  ├── libs
+  │   └── common
+  ├── mongo
+  │   ├── init.js
+  │   └── mongo-keyfile
+  ├── nest-cli.json
+  ├── package-lock.json
+  ├── package.json
+  ├── tsconfig.build.json
+  └── tsconfig.json
+  ```
+- 각 서비스들은 `apps` 디렉토리 아래에 위치하며, `libs` 디렉토리에는 공통 모듈 및 유틸리티가 포함되어 있습니다.
+- `mongo` 디렉토리에는 초기화 스크립트와 MongoDB ReplicaSet을 구성하기 위한 키파일이 포함되어 있습니다.
+
+- 각 서비스의 내부는 도메인 단위로 구분되어 있으며,
+  각 도메인별로 `controller`, `service`, `repository`로 나누어져 있습니다.
+  ```text
+  .
+  ├── auth
+  │   ├── auth.controller.spec.ts
+  │   ├── auth.controller.ts
+  │   ├── auth.module.ts
+  │   ├── auth.service.ts
+  │   ├── dto
+  │   ├── schema
+  │   └── user-token.repository.ts
+  ├── auth-service.module.ts
+  ├── main.ts
+  └── users
+    ├── dto
+    ├── schema
+    ├── user.controller.ts
+    ├── user.module.ts
+    ├── user.repository.ts
+    └── user.service.ts
+  ``` 
+  `gateway`의 경우, 인증/인가를 위한 guards, http 요청 기록을 위한 middlewares, 각 서비스로의 라우팅을 위한 controllers를 목적에 따라 디렉토리를
+  구분해 두었습니다.
+  ```text
+  .
+  ├── controllers
+  │   ├── auth
+  │   ├── events
+  │   ├── reward-request
+  │   ├── rewards
+  │   └── users
+  ├── decorators
+  │   ├── current-user.decorator.ts
+  │   ├── enum-type.decorator.ts
+  │   └── public.decorator.ts
+  ├── gateway.module.ts
+  ├── guards
+  │   ├── jwt-auth.guard.ts
+  │   ├── jwt.strategy.ts
+  │   ├── role-strategy.interface.ts
+  │   ├── role.strategy.ts
+  │   ├── roles.decorator.ts
+  │   └── roles.guard.ts
+  ├── main.ts
+  └── middleware
+      └── http-logger.middleware.ts
+  ```
