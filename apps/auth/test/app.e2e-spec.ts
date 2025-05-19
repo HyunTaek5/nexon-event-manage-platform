@@ -8,6 +8,7 @@ import {
 import { AuthServiceModule } from '../src/auth-service.module';
 import { firstValueFrom } from 'rxjs';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 jest.setTimeout(30000);
 
@@ -22,6 +23,9 @@ describe('Auth Microservice (e2e)', () => {
       replSet: { count: 1, storageEngine: 'wiredTiger' },
     });
     process.env.MONGODB_URI = mongoServer.getUri();
+
+    await mongoose.connect(process.env.MONGODB_URI!);
+    await mongoose.connection.createCollection('users');
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthServiceModule],
@@ -120,7 +124,7 @@ describe('Auth Microservice (e2e)', () => {
     );
 
     expect(response).toHaveProperty('id', userId);
-    expect(response.user).toHaveProperty('email', 'test@example.com');
+    expect(response).toHaveProperty('email', 'test@example.com');
   });
 
   it('should patch user role', async () => {

@@ -158,7 +158,6 @@ export class RewardRequestService {
       case 'login_days':
         // mock random user login data
         const loginDays = Math.floor(Math.random() * 7);
-        console.log('login_days', loginDays);
         return loginDays >= condition.value;
 
       case 'invite_friends':
