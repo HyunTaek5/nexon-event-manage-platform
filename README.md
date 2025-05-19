@@ -175,3 +175,63 @@ $ docker exec -it mongodb-primary mongosh -u root -p password --eval "
   └── middleware
       └── http-logger.middleware.ts
   ```
+
+## 🏛️ 데이터 모델링 Diagram
+
+```mermaid
+erDiagram
+    USER {
+        ObjectId _id PK
+        date createdAt
+        string email
+        string password
+        string firstName
+        string lastName
+        string nickname
+        string role
+    }
+
+    USER_TOKEN {
+        ObjectId _id PK
+        date createdAt
+        ObjectId userId FK
+        string accessToken
+        string refreshToken
+        date expireAt
+    }
+
+    EVENT {
+        ObjectId _id PK
+        date createdAt
+        string title
+        string description
+        date startDate
+        date endDate
+        boolean isActive
+        array conditions
+    }
+
+    REWARD {
+        ObjectId _id PK
+        ObjectId eventId FK
+        string type
+        number amount
+        object metadata
+    }
+
+    REWARD_REQUEST {
+        ObjectId _id PK
+        date createdAt
+        ObjectId userId FK
+        ObjectId eventId FK
+        string status
+        string failedReason
+        array rewardSnapshot
+        date requestedAt
+    }
+
+    USER ||--o{ USER_TOKEN: has
+    USER ||--o{ REWARD_REQUEST: requests
+    EVENT ||--o{ REWARD: gives
+    EVENT ||--o{ REWARD_REQUEST: accepts
+```
