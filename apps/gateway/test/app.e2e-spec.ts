@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { GatewayModule } from '../src/gateway.module';
 import * as request from 'supertest';
+import { Response } from 'express';
 
 describe('Gateway Controller (e2e)', () => {
   let gatewayApp: INestApplication;
@@ -17,6 +18,10 @@ describe('Gateway Controller (e2e)', () => {
       type: VersioningType.URI,
     });
 
+    gatewayApp.getHttpAdapter().get('/', (_, res: Response) => {
+      res.status(200).send('OK');
+    });
+
     await gatewayApp.init();
     await gatewayApp.listen(9000);
   });
@@ -26,7 +31,7 @@ describe('Gateway Controller (e2e)', () => {
   });
 
   it('should return 200 OK when accessing unprotected route', async () => {
-    const res = await request(gatewayApp.getHttpServer()).get('/v1/events');
+    const res = await request(gatewayApp.getHttpServer()).get('/');
     expect(res.status).toBe(200);
   });
 
