@@ -1,24 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import { GatewayModule } from '../src/gateway.module';
+import * as request from 'supertest';
 
-describe('GatewayController (e2e)', () => {
-  let app: INestApplication;
+describe('Gateway Controller (e2e)', () => {
+  let gatewayApp: INestApplication;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    const gatewayModule: TestingModule = await Test.createTestingModule({
       imports: [GatewayModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    gatewayApp = gatewayModule.createNestApplication();
+
+    gatewayApp.enableVersioning({
+      type: VersioningType.URI,
+    });
+
+    await gatewayApp.init();
+    await gatewayApp.listen(9000);
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await gatewayApp.close();
+  });
+
+  it('should return 200 OK when accessing unprotected route', async () => {
+    const res = await request(gatewayApp.getHttpServer()).get('/v1/events');
+    expect(res.status).toBe(200);
+  });
+
+  it('should return 401 Unauthorized when accessing protected route without token', async () => {
+    const res = await request(gatewayApp.getHttpServer()).post('/v1/events');
+    expect(res.status).toBe(401);
   });
 });
