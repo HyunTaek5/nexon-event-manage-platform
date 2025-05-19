@@ -9,9 +9,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { JoinDto } from '../../../../auth/src/users/dto/request/join.dto';
 import { catchError, firstValueFrom } from 'rxjs';
-import { JoinResultDto } from '../../../../auth/src/users/dto/response/join-result.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../decorators/public.decorator';
 import { Roles } from '../../guards/roles.decorator';
@@ -20,6 +18,8 @@ import { PatchUserRoleDto } from './dto/request/patch-user-role.dto';
 import { PatchUserRoleResultDto } from './dto/response/patch-user-role-result.dto';
 import { CurrentUser, User } from '../../decorators/current-user.decorator';
 import { GetRequestUserDto } from './dto/response/get-request-user.dto';
+import { JoinDto } from './dto/request/join.dto';
+import { JoinResultDto } from './dto/response/join-result.dto';
 
 @Controller({ path: 'users', version: '1' })
 export class UserController {
