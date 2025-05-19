@@ -43,3 +43,40 @@
     - [x] 유저: 본인 요청만 조회 가능
     - [x] 관리자/감사자/운영자: 전체 보상 요청 내역 조회
     - [x] 필터 기능 (이벤트별, 요청 상태별, 요청 날짜별)
+
+## 📦 사용 기술 스택
+
+- Node.js v18
+- NPM v9
+- NestJS v10
+    - NestJS 최신버전(v11)의
+      경우, [최소 지원 버전이 Node.js v20로 제한되어](https://docs.nestjs.com/migration-guide#nodejs-v16-and-v18-no-longer-supported)
+      Node.js v18 기준 최신버전인 v10을 사용했습니다.
+- TypeScript v5
+- MongoDB (ReplicaSet 구성)
+- Docker & Docker Compose
+
+## 💻 실행 방법
+
+`docker compose up -d --build` 명령어로 MongoDB와 Gateway, Auth, Event 서버를 실행합니다.
+
+```bash
+$ docker compose up -d --build
+```
+
+모든 컨테이너가 준비되었다면, `MongoDB Primary` 컨테이너에 아래의 명령어를 통해 MongoDB ReplicaSet을 구성합니다.
+
+```bash
+$ docker exec -it mongodb-primary mongosh -u root -p password --eval "
+  rs.initiate({
+    _id: 'rs0',
+    members: [
+      { _id: 0, host: 'mongodb-primary:27017', priority: 2 },
+      { _id: 1, host: 'mongodb-secondary:27017', priority: 1 },
+      { _id: 2, host: 'mongodb-arbiter:27017', arbiterOnly: true }
+    ]
+  })
+"
+```
+
+이후, `Gateway` 컨테이너가 실행중인 8000번 포트의 [`/api` 엔드포인트](http://localhost:8000/api)를 통해 Swagger API 문서에 접근할 수 있습니다.
