@@ -1,24 +1,137 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import { INestMicroservice } from '@nestjs/common';
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 import { AuthServiceModule } from '../src/auth-service.module';
+import { firstValueFrom } from 'rxjs';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
-describe('AuthController (e2e)', () => {
-  let app: INestApplication;
+jest.setTimeout(30000);
 
-  beforeEach(async () => {
+describe('Auth Microservice (e2e)', () => {
+  let mongoServer: MongoMemoryReplSet;
+
+  let app: INestMicroservice;
+  let client: ClientProxy;
+
+  beforeAll(async () => {
+    mongoServer = await MongoMemoryReplSet.create({
+      replSet: { count: 1, storageEngine: 'wiredTiger' },
+    });
+    process.env.MONGODB_URI = mongoServer.getUri();
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthServiceModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = moduleFixture.createNestMicroservice({
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port: 9001 },
+    });
+
+    await app.listen();
+
+    client = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port: 9001 },
+    });
+
+    await client.connect();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    if (mongoServer) await mongoServer.stop();
+    await client.close();
+    await app.close();
+  });
+
+  let userId: string;
+
+  it('should register a new user', async () => {
+    const response = await firstValueFrom(
+      client.send('join_user', {
+        email: 'test@example.com',
+        password: '1234',
+        firstName: 'Test',
+        lastName: 'User',
+        nickname: 'tester',
+      }),
+    );
+
+    expect(response).toHaveProperty('id');
+    expect(response).toHaveProperty('email', 'test@example.com');
+    userId = response.id;
+  });
+
+  it('should fail to register a user with existing email', async () => {
+    try {
+      await firstValueFrom(
+        client.send('join_user', {
+          email: 'test@example.com',
+          password: '1234',
+          firstName: 'Test',
+          lastName: 'User',
+          nickname: 'tester',
+        }),
+      );
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('이미 존재하는 이메일입니다.');
+    }
+  });
+
+  it('should fail to register a user with existing nickname', async () => {
+    try {
+      await firstValueFrom(
+        client.send('join_user', {
+          email: 'test1@example.com',
+          password: '1234',
+          firstName: 'Test',
+          lastName: 'User',
+          nickname: 'tester',
+        }),
+      );
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('이미 존재하는 닉네임입니다.');
+    }
+  });
+
+  it('should login a user', async () => {
+    const response = await firstValueFrom(
+      client.send('login_user', {
+        email: 'test@example.com',
+        password: '1234',
+      }),
+    );
+
+    expect(response).toHaveProperty('accessToken');
+    expect(response).toHaveProperty('refreshToken');
+  });
+
+  it('should validate user', async () => {
+    const response = await firstValueFrom(
+      client.send('valid_user', {
+        userId,
+      }),
+    );
+
+    expect(response).toHaveProperty('id', userId);
+    expect(response.user).toHaveProperty('email', 'test@example.com');
+  });
+
+  it('should patch user role', async () => {
+    const response = await firstValueFrom(
+      client.send('patch_user_role', {
+        id: userId,
+        role: 'ADMIN',
+      }),
+    );
+
+    expect(response).toHaveProperty('id', userId);
+    expect(response).toHaveProperty('role', 'ADMIN');
   });
 });
