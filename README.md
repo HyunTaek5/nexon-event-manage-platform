@@ -58,6 +58,12 @@
 
 ## 💻 실행 방법
 
+MongoDB ReplicaSet 구성을 위한 keyfile의 권한을 재설정합니다.
+
+```bash
+chmod 400 mongo/mongo-keyfile
+```
+
 `docker compose up -d --build` 명령어로 MongoDB와 Gateway, Auth, Event 서버를 실행합니다.
 
 ```bash
@@ -79,11 +85,25 @@ $ docker exec -it mongodb-primary mongosh -u root -p password --eval "
 "
 ```
 
+아래와 같이 `{ ok : 1 }`이 출력되면 ReplicaSet 구성이 완료된 것입니다.
+
+```shell
+{ ok : 1 }
+```
+
 `Gateway` 컨테이너가 실행중인 8000번 포트의 [`/api` 엔드포인트](http://localhost:8000/api)를 통해 Swagger API 문서에 접근할 수 있습니다.
 
 ## ⚙️ 테스트 실행 방법
 
 로컬 개발 환경에서 테스트를 실행하는 방법입니다.
+
+npm 패키지 매니저를 사용하여 의존성을 설치해야합니다.
+
+```bash
+$ npm ci
+```
+
+정상적으로 설치되었다면, 아래의 명령어로 테스트를 실행할 수 있습니다.
 
 ```bash
 $ npm run test:cov
@@ -253,8 +273,6 @@ erDiagram
 Jest 및 Supertest를 사용하여 각 서비스의 통합 테스트를 수행하였습니다.
 
 ![jestTestResult](https://github.com/user-attachments/assets/51b6bd8c-0ec1-4501-89ef-c68cf0666149)
-
-
 
 ## 📝 API 명세
 
