@@ -251,6 +251,7 @@ erDiagram
 ## 🧪 Test 결과
 
 Jest 및 Supertest를 사용하여 각 서비스의 통합 테스트를 수행하였습니다.
+
 ![testResult](https://github-production-user-asset-6210df.s3.amazonaws.com/38789284/445278048-cd29e41a-917c-4761-9018-9aede4b4c34b.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250519T185411Z&X-Amz-Expires=300&X-Amz-Signature=8b2333ad36b3211eade634f57f5bd25c1187ddd45cf934a2e3394f20a5056de1&X-Amz-SignedHeaders=host)
 
 ## 📝 API 명세
@@ -262,3 +263,44 @@ EndPoint는 인증을 담당하는 `/auth`, 이벤트의 조회 및 생성, 보�
 API 명세는 Swagger를 통해 문서화를 진행하였습니다.
 
 http://localhost:8000/api 로 접속하여 확인할 수 있습니다.
+
+## 🤔 회고
+
+### 1. MSA 구조의 적용
+
+- 마이크로서비스 아키텍쳐를 처음으로 도입해보며 각 서비스의 독립성 보장 및 책임을 분리하였습니다.
+- MongoDB는 `ReplicaSet` 구조로 구성하여 장애 발생 시 자동 선출을 통해 고가용성을 확보하고, 데이터의 일관성을 유지할 수 있도록 하였습니다.
+    - 도메인별 DB 분리 여부에 대한 고민이 있었지만, 운영 및 유지 관리의 복잡성을 줄이기 위해 단일 DB 구조를 유지하기로 결정하였습니다.
+    - 대신 인프라 수준에서 `ReplicaSet`을 구성함으로써 단일 장애 지점을 제거하고 장애 복구 능력과 안정성을 확보하여 DB 스키마는 단일화하되, 물리적 배포 측면에서 고가용성과 일관성을 달성하였습니다.
+
+### 2. 테스트 커버리지
+
+- 다음에 유사한 프로젝트를 진행할 때  `Branches`, `Functions` 테스트 커버리지에 더 신경을 써서 평균 테스트 커버리지를 높이는 것이 목표입니다.
+
+### 3. Gateway ↔ Microservice 에러 핸들링
+
+- Gateway는 REST API 서버로, 클라이언트로부터 들어오는 요청을 TCP를 통해 정해진 메세지 패턴에 맞춰 payload에 요청 body와 param값을 포함하여 하위(`Auth`, `Event`)
+  마이크로서비스로 전달하고, 응답을 받아 반환하도록 구현하였습니다.
+    - 마이크로서비스에서 예외가 발생한 경우, `RpcException`로 예외를 Gateway로 발생시키고, Gateway에서는 이를 `HttpException`으로 변환하여 일관된 HTTP 응답을
+      제공할 수 있도록 하였습니다.
+    - 예외 매핑은 Gateway의 각 컨트롤러에서 `catchError` 연산자를 통해 수행하며, 마이크로서비스에서 발생한 예외의 `status` 값에 따라 적절한 NestJS 예외 클래스(
+      `NotFoundException`,`ConflictException` 등)으로 에러를 반환합니다.
+    - 예를 들어, 존재하지 않는 이벤트를 조회하는 경우 Event 마이크로서비스에서는 다음과 같이 예외를 발생시키며,
+      ```Typescript
+      throw new RpcException({
+        status: 404,
+        message: '이벤트가 존재하지 않습니다.'
+      });
+      ```
+      Gateway에서는 해당 예외를 `NotFoundException`으로 변환하여 클라이언트에 `404 Not Found` 상태 코드를 반환합니다.
+
+- 마이크로서비스에서 HTTP 기반 Exception이 아닌 RPC 기반 Exception을 사용해서 Gateway에 예외를 전달하도록 구현하면서
+  컨트롤러 레벨에서의 예외 처리 로직이 다소 복잡해진 점이 아쉬움으로 남았습니다.
+- 중복되는 예외 처리 로직을 별도의 유틸리티 함수 또는 데코레이터로 분리하여 재사용성을 높이고, 가독성을 개선하고 싶습니다.
+
+### 4. 이벤트 조건 검증 방식에 대한 해석
+
+- 유저가 이벤트 조건을 충족했는지를 검증하는 요구사항에 대해, 유저 활동 데이터를 모킹하여 간단히 처리하는 방식으로 구현하였습니다.
+- 하지만 해당 요구사항을 다소 자의적으로 해석하고, 실제 데이터 기반의 조건 검증 로직을 충분히 고려하지 못한 점은 아쉬움으로 남습니다.
+- 향후 유사한 과제를 진행할 때에는 요구사항의 의미를 명확히 파악하고, 실제 시나리오를 기반으로 한 조건 검증 설계와 구현에 더 많은 고민을 담아야겠다고 느꼈습니다.
+
