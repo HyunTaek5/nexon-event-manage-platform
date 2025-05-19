@@ -15,8 +15,9 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --config ./apps/gateway/test/jest-e2e.json --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./apps/gateway/test/jest-e2e.json",
     "test:e2e:auth": "jest --config ./apps/auth/test/jest-e2e.json",
     "test:e2e:event": "jest --config ./apps/event/test/jest-e2e.json"
   },
